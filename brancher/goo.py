@@ -64,13 +64,6 @@ class Goo:
             links, _ = search(word)
             link = links[index]
         page = requests.get(Goo.prefix + link)
-        #tree = html.fromstring(page.content)
-        #res1 = tree.xpath(('//div[@class="kokugo"]//li[@class="in-ttl-b '
-        #        'text-indent"]/text()'))
-        #if len(res1) == 0:
-        #    return tree.xpath(('//div[@class="kokugo"]//li[@class="in-ttl-b"]'
-        #        '/text()'))
-        #return res1
         parser = GooParser('in-ttl-b text-indent' in page.content)
         parser.feed(page.content)
         return parser.data

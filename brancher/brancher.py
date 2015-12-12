@@ -116,37 +116,24 @@ class BrancherWidget(QWidget):
 
     def add_word(self, text):
         search_res = Goo.search(text)
-        #search_res = [u'けんとば「言葉」', u'ことば「言葉」']
-        res_s = u'\n'.join(search_res[1])
-        #print res_s
-        #w_idx, ok = QInputDialog.getText(self, 'Select Definition',
-        #        res_s)
+
         ls = ListSelection(search_res[1])
-        #w_idx = 0
-        #if ok:
         if ls.exec_() == QDialog.Accepted:
             w_idx = ls.GetValue()
             definitions = Goo.get_definition(text, link=search_res[0][int(w_idx)])
-            #definitions = search_res
-            #def_s = u'\n'.join(definitions)
-            #d_idx, ok = QInputDialog.getText(self, 'Select Definition',
-            #        def_s)
-            #d_idx = 0
+
             ls = ListSelection(definitions)
-            #if ok:
             if ls.exec_() == QDialog.Accepted:
                 d_idx = ls.GetValue()
                 definition = definitions[int(d_idx)]
                 sentence = u''
                 sen_res = Tatoeba.search(text)
-                #sen_s = u'\n'.join(sen_res)
-                #s_idx, ok = QInputDialog.getText(self, 'Select Sample Sentence', 
-                #        sen_s)
+
                 ls = ListSelection(sen_res)
-                #if ok:
                 if ls.exec_() == QDialog.Accepted:
                     s_idx = ls.GetValue()
                     sentence = sen_res[int(s_idx)]
+
                 if self.tree is None:
                     self.tree = Tree()
                     self.tree.create_node(text, text, data=(definition, sentence))
@@ -164,9 +151,6 @@ class BrancherWidget(QWidget):
                         sel.setExpanded(True)
                         sel.setSelected(False)
                         node.setSelected(True)
-
-            #node = QTreeWidgetItem(self.tree_view)
-            #node.setText(0, u'Node ' + text)
 
     def item_changed(self):
         print self.tree_view.selectedItems()
