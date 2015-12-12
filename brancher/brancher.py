@@ -117,21 +117,21 @@ class BrancherWidget(QWidget):
     def add_word(self, text):
         search_res = Goo.search(text)
 
-        ls = ListSelection(search_res[1])
+        ls = ListSelection(search_res[1], "Select the correct word entry", self)
         if ls.exec_() == QDialog.Accepted:
-            w_idx = ls.GetValue()
+            w_idx = ls.get_value()
             definitions = Goo.get_definition(text, link=search_res[0][int(w_idx)])
 
-            ls = ListSelection(definitions)
+            ls = ListSelection(definitions, "Select the desired definition", self)
             if ls.exec_() == QDialog.Accepted:
-                d_idx = ls.GetValue()
+                d_idx = ls.get_value()
                 definition = definitions[int(d_idx)]
                 sentence = u''
                 sen_res = Tatoeba.search(text)
 
-                ls = ListSelection(sen_res)
+                ls = ListSelection(sen_res, "Select a sample sentence", self)
                 if ls.exec_() == QDialog.Accepted:
-                    s_idx = ls.GetValue()
+                    s_idx = ls.get_value()
                     sentence = sen_res[int(s_idx)]
 
                 if self.tree is None:

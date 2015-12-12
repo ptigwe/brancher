@@ -1,50 +1,44 @@
 import sys
 from PyQt4.QtGui import *
 class ListSelection(QDialog):
-    def __init__(self, item_ls, parent=None):
+    def __init__(self, item_ls, title="", parent=None):
         super(ListSelection, self).__init__(parent)
+        self.setWindowTitle(title)
         self.result = ""
-        #================================================= 
-        # listbox
-        #================================================= 
+
         self.listWidget = QListWidget()
         self.items = []
         for item in item_ls:
             w_item = QListWidgetItem(item)
             self.items.append(w_item)
             self.listWidget.addItem(w_item)
-            self.listWidget.itemClicked.connect(self.OnSingleClick)
-            self.listWidget.itemActivated.connect(self.OnDoubleClick)
+            self.listWidget.itemClicked.connect(self.single_click)
+            self.listWidget.itemActivated.connect(self.double_click)
         layout = QGridLayout()
         row=0
         layout.addWidget(self.listWidget,row,0,1,3) #col span=1, row span=3
-        #================================================= 
-        # OK, Cancel
-        #================================================= 
+
         row +=1
         self.but_ok = QPushButton("OK")
         layout.addWidget(self.but_ok ,row,1)
-        self.but_ok.clicked.connect(self.OnOk)
+        self.but_ok.clicked.connect(self.ok)
 
         self.but_cancel = QPushButton("Cancel")
         layout.addWidget(self.but_cancel ,row,2)
-        self.but_cancel.clicked.connect(self.OnCancel)
+        self.but_cancel.clicked.connect(self.cancel)
 
-        #================================================= 
-        #
-        #================================================= 
         self.setLayout(layout)
         self.setGeometry(300, 200, 460, 350)
 
-    def OnSingleClick(self, item):
+    def single_click(self, item):
         self.result = self.items.index(item)
 
-    def OnDoubleClick(self, item):
+    def double_click(self, item):
         self.result = self.items.index(item)
         self.done(QDialog.Accepted)
         return self.result
 
-    def OnOk(self):
+    def ok(self):
         if self.result == "":
             QMessageBox.information(self, "Error",
             "One item must be selected")
@@ -52,21 +46,8 @@ class ListSelection(QDialog):
         self.done(QDialog.Accepted)
         return self.result
 
-    def OnCancel(self):
+    def cancel(self):
         self.done(QDialog.Rejected)
 
-    def GetValue(self):
+    def get_value(self):
         return self.result
-
-def main():
-    app = QApplication(sys.argv)
-    ls = ['apples','bananas','melons']
-    lb = ListSelection(ls)
-    returnCode=lb.exec_()
-    print(returnCode)
-    value = lb.GetValue()
-    print(value)
-    sys.exit(app.exec_())
-
-if __name__ == '__main__':
-    main()
