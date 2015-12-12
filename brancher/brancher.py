@@ -107,6 +107,8 @@ class BrancherWidget(QWidget):
     def clr_card(self, arg):
         if self.root is not None:
             self.tree_view.invisibleRootItem().removeChild(self.root)
+        self.root = None
+        self.tree = None
 
     def add_card(self, arg):
         text, ok = QInputDialog.getText(self, 'Input Dialog',
