@@ -122,6 +122,9 @@ class BrancherWidget(QWidget):
         ls = ListSelection(search_res[1], "Select the correct word entry", self)
         if ls.exec_() == QDialog.Accepted:
             w_idx = ls.get_value()
+            text_res = search_res[1][int(w_idx)].split(u'【')
+            if len(text_res) == 2:
+                text = text_res[1][:-1]
             definitions = Goo.get_definition(text, link=search_res[0][int(w_idx)])
 
             ls = ListSelection(definitions, "Select the desired definition", self)
@@ -137,19 +140,21 @@ class BrancherWidget(QWidget):
                     sentence = sen_res[int(s_idx)]
 
                 if self.tree is None:
-                    self.tree = Tree()
-                    self.tree.create_node(text, text, data=(definition, sentence))
                     node = QTreeWidgetItem(self.tree_view)
                     node.setText(0, text)
+                    self.tree = Tree()
+                    text = node.text(0)
+                    self.tree.create_node(text, text, data=(definition, sentence))
                     self.root = node
                 else:
                     sel = self.tree_view.selectedItems()
                     if len(sel) == 1:
                         sel = sel[0]
-                        self.tree.create_node(text, text, parent=sel.text(0),
-                                data=(definition,sentence))
                         node = QTreeWidgetItem(sel)
                         node.setText(0, text)
+                        text = node.text(0)
+                        self.tree.create_node(text, text, parent=sel.text(0),
+                                data=(definition,sentence))
                         sel.setExpanded(True)
                         sel.setSelected(False)
                         node.setSelected(True)
