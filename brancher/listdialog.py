@@ -3,12 +3,15 @@
 import sys
 from PyQt4.QtGui import *
 class ListSelection(QDialog):
-    def __init__(self, item_ls, title="", parent=None):
+    def __init__(self, item_ls, title="", parent=None, multi_select=False):
         super(ListSelection, self).__init__(parent)
         self.setWindowTitle(title)
-        self.result = ""
+        self.result = []
 
         self.listWidget = QListWidget()
+        if multi_select:
+            self.listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
+
         self.items = []
         for item in item_ls:
             w_item = QListWidgetItem(item)
@@ -33,18 +36,25 @@ class ListSelection(QDialog):
         self.setGeometry(300, 200, 460, 350)
 
     def single_click(self, item):
-        self.result = self.items.index(item)
+        self.result = [self.items.index(item)]
 
     def double_click(self, item):
-        self.result = self.items.index(item)
+        self.result = [self.items.index(item)]
         self.done(QDialog.Accepted)
         return self.result
 
     def ok(self):
-        if self.result == "":
+        res = self.listWidget.selectedItems()
+
+        if len(res) == 0:
             QMessageBox.information(self, "Error",
             "One item must be selected")
             return 
+
+        self.result = []
+        for i in res:
+            self.result.append(self.items.index(i))
+
         self.done(QDialog.Accepted)
         return self.result
 

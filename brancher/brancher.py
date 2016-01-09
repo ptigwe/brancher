@@ -127,7 +127,7 @@ class BrancherWidget(QWidget):
 
     def add_card(self, arg):
         text, ok = QInputDialog.getText(self, 'Input Dialog',
-                'Enter your name:')
+                'Unknown Word:')
         if ok:
             self.add_word(text)
 
@@ -136,49 +136,63 @@ class BrancherWidget(QWidget):
 
         ls = ListSelection(search_res[1], "Select the correct word entry", self)
         if ls.exec_() == QDialog.Accepted:
-            w_idx = ls.get_value()
+            w_idx = ls.get_value()[0]
             text_res = search_res[1][int(w_idx)].split(u'【')
             if len(text_res) == 2:
                 text = text_res[1][:-1]
             definitions = Goo.get_definition(text, link=search_res[0][int(w_idx)])
 
-            ls = ListSelection(definitions, "Select the desired definition", self)
+            ls = ListSelection(definitions, "Select the desired definition", self, True)
             if ls.exec_() == QDialog.Accepted:
-                d_idx = ls.get_value()
-                definition = definitions[int(d_idx)]
-                sentence = u''
-                sen_res = Tatoeba.search(text)
+                #d_idx = ls.get_value()[0]
+                res = ls.get_value()
+                print 'Res', len(res)
+                for d_idx in res:
+                    definition = definitions[int(d_idx)]
+                    print d_idx
+                    print definition
+                    sentence = u''
+                    #sen_res = Tatoeba.search(text)
 
-                ls = ListSelection(sen_res, "Select a sample sentence", self)
-                if ls.exec_() == QDialog.Accepted:
-                    s_idx = ls.get_value()
-                    sentence = sen_res[int(s_idx)]
+                    #ls = ListSelection(sen_res, "Select a sample sentence", self)
+                    #if ls.exec_() == QDialog.Accepted:
+                    #    s_idx = ls.get_value()[0]
+                    #    sentence = sen_res[int(s_idx)]
 
-                if self.tree is None:
-                    node = QTreeWidgetItem(self.tree_view)
-                    node.setText(0, text)
-                    self.tree = Tree()
-                    text = node.text(0)
-                    self.tree.create_node(text, text, data=(definition, sentence))
-                    self.root = node
-                else:
-                    sel = self.tree_view.selectedItems()
-                    if len(sel) == 1:
-                        sel = sel[0]
-                        node = QTreeWidgetItem(sel)
-                        node.setText(0, text)
-                        text = node.text(0)
-                        self.tree.create_node(text, text, parent=sel.text(0),
-                                data=(definition,sentence))
-                        sel.setExpanded(True)
-                        sel.setSelected(False)
-                        node.setSelected(True)
+                    self.add_word_with_definition(text, definition, sentence)
+
+    def add_word_with_definition(self, text, definition, sentence):
+        if self.tree is None:
+            self.next_id = 0
+            text = str(self.next_id) + '.' + text
+            self.next_id += 1
+
+            node = QTreeWidgetItem(self.tree_view)
+            node.setText(0, text)
+            self.tree = Tree()
+            text = node.text(0)
+            self.tree.create_node(text, text, data=(definition, sentence))
+            self.root = node
+            node.setSelected(True)
+        else:
+            sel = self.tree_view.selectedItems()
+            if len(sel) == 1:
+                text = str(self.next_id) + '.' + text
+                self.next_id += 1
+
+                sel = sel[0]
+                node = QTreeWidgetItem(sel)
+                node.setText(0, text)
+                text = node.text(0)
+                self.tree.create_node(text, text, parent=sel.text(0),
+                        data=(definition,sentence))
+                sel.setExpanded(True)
 
     def item_changed(self):
         print self.tree_view.selectedItems()
         for i in self.tree_view.selectedItems():
-            self.w_field.setText(i.text(0))
-            self.w_entry.setText(i.text(0))
+            self.w_field.setText('.'.join(i.text(0).split('.')[1:]))
+            self.w_entry.setText('.'.join(i.text(0).split('.')[1:]))
             imi, reibun = self.tree.get_node(i.text(0)).data
             self.i_field.setText(imi)
             self.i_entry.setText(imi)
