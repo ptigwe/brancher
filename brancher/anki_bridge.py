@@ -19,9 +19,11 @@ import sys
 from aqt import mw
 from aqt.qt import *
 import aqt
+from aqt.utils import showInfo
 import anki
 import anki.collection
 from anki.hooks import addHook
+from anki.hooks import runFilter
 from anki.sched import Scheduler
 from anki.models import defaultModel,defaultField,defaultTemplate
 from brancher import *
@@ -66,6 +68,13 @@ class Anki:
             collection.addNote(note)
             collection.autosave()
             self.startEditing()
+            srcIdx = 0
+            for c, name in enumerate(mw.col.models.fieldNames(note.model())):
+                if name == 'Expression':
+                    srcIdx = c
+            print "Source", srcIdx
+            showInfo(str(srcIdx))
+            runFilter("editFocusLost", False, note, srcIdx)#note.fields.index('Expression'))
             return note.id
 
     def canAddNote(self, deckName, modelName, fields):
