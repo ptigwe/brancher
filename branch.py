@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import depend
+depend.check_dependencies()
+
 from aqt import mw
 from aqt.utils import showInfo
 from aqt.qt import *
