@@ -22,9 +22,12 @@ class Tatoeba:
     @staticmethod
     def search(word):
         page = requests.get(Tatoeba.link.format(1, word))
-        tree = html.fromstring(page.content)
-        res1 = tree.xpath('//div[@class="module"]//div[@lang="ja"]/text()')
+        content = page.content
+        tree = html.fromstring(content)
+        res1 = tree.xpath('//div[@class="sentence-and-translations"]//div[@class="text"]/text()')
+        print res1
         page = requests.get(Tatoeba.link.format(2, word))
         tree = html.fromstring(page.content)
-        res2 = tree.xpath('//div[@class="module"]//div[@lang="ja"]/text()')
+        res2 = tree.xpath('//div[@class="sentence-and-translations"]//div[@class="text"]/text()')
+        print res2
         return list(set(res1 + res2))

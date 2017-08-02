@@ -114,6 +114,7 @@ class BrancherWidget(QWidget):
 
     def fin_card(self, arg):
         words = [i for i in self.tree.expand_tree(mode=Tree.DEPTH)][::-1]
+        print("Anki:", self.anki)
         for i in words:
             data = self.tree[i].data
             res = {u'Keyword':self.tree[i].tag, u'Expression':data[1], u'Definition':data[0]}

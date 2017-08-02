@@ -60,21 +60,20 @@ class Anki:
         decks = self.collection().decks
         if u'Brancher' not in decks.allNames():
             decks.id(u'Brancher')
-            
+
     def addNote(self, deckName, modelName, fields, tags=list()):
         note = self.createNote(deckName, modelName, fields, tags)
         if note is not None:
+            self.startEditing()
             collection = self.collection()
             collection.addNote(note)
             collection.autosave()
-            self.startEditing()
             srcIdx = 0
             for c, name in enumerate(mw.col.models.fieldNames(note.model())):
                 if name == 'Expression':
                     srcIdx = c
-            print "Source", srcIdx
-            showInfo(str(srcIdx))
             runFilter("editFocusLost", False, note, srcIdx)#note.fields.index('Expression'))
+            self.stopEditing()
             return note.id
 
     def canAddNote(self, deckName, modelName, fields):
@@ -104,10 +103,10 @@ class Anki:
         browser = aqt.dialogs.open('Browser', self.window())
         browser.form.searchEdit.lineEdit().setText(u' '.join([u'{0}:{1}'.format(key,value) for key,value in query.items()]))
         browser.onSearch()
-    
+
     def getNotes(self, modelName, key, value):
         return self.collection().findNotes(key + u':' + value + u' note:' + modelName)
-        
+
     def getCards(self, modelName, onlyFirst = False):
         model = self.models().byName(modelName)
         modelid = int(model[u"id"])
@@ -117,7 +116,7 @@ class Anki:
         query+= "where n.mid=%d" % (modelid)
         if onlyFirst: query+= "group by n.id"
         return self.collection().db.execute(query)
-    
+
     def getCardsByNote(self, modelName, key, value):
         return self.collection().findCards(key + u':' + value + u' note:' + modelName)
 
@@ -131,14 +130,14 @@ class Anki:
         query+= u"and n.sfld in " + (u"(%s)" % u",".join([u"'%s'"%(s) for s in values]))
         self.query = query
         return self.collection().db.execute(query)
-        
+
     def getModelKey(self, modelName):
         model = self.collection().models.byName(modelName)
         if model is None:
             return None
         frstfld = model[u"flds"][0]
         return frstfld[u"name"]
-        
+
     def startEditing(self):
         self.window().requireReset()
 
