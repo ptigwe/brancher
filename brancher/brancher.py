@@ -55,10 +55,10 @@ class BrancherWidget(QWidget):
         self.fin_btn.clicked.connect(self.fin_card)
         self.clr_btn.clicked.connect(self.clr_card)
 
-        self.l_grid.addWidget(self.tree_view, 1, 0)
+        self.l_grid.addWidget(self.tree_view, 1, 0, 1, 2)
         self.l_grid.addWidget(self.add_btn, 2, 0)
-        self.l_grid.addWidget(self.fin_btn, 3, 0)
-        self.l_grid.addWidget(self.clr_btn, 3, 1)
+        self.l_grid.addWidget(self.fin_btn, 3, 0, 1, 2)
+        self.l_grid.addWidget(self.clr_btn, 2, 1)
         self.l_w.setLayout(self.l_grid)
 
         self.r_grid_u = QGridLayout()
@@ -105,6 +105,7 @@ class BrancherWidget(QWidget):
 
         self.splitter.addWidget(self.l_w)
         self.splitter.addWidget(self.r_s)
+        self.splitter.setSizes([50, 250])
         self.m_grid.addWidget(self.splitter)
         self.setLayout(self.m_grid)
         self.setGeometry(300, 300, 800, 500)
@@ -149,15 +150,14 @@ class BrancherWidget(QWidget):
                 print 'Res', len(res)
                 for d_idx in res:
                     definition = definitions[int(d_idx)]
-                    print d_idx
-                    print definition
+                    print(d_idx)
                     sentence = u''
-                    #sen_res = Tatoeba.search(text)
+                    sen_res = Tatoeba.search(text)
 
-                    #ls = ListSelection(sen_res, "Select a sample sentence", self)
-                    #if ls.exec_() == QDialog.Accepted:
-                    #    s_idx = ls.get_value()[0]
-                    #    sentence = sen_res[int(s_idx)]
+                    ls = ListSelection(sen_res, "Select a sample sentence", self)
+                    if ls.exec_() == QDialog.Accepted:
+                        s_idx = ls.get_value()[0]
+                        sentence = sen_res[int(s_idx)]
 
                     self.add_word_with_definition(text, definition, sentence)
 
